@@ -1,3 +1,5 @@
+package jsonparser;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -5,7 +7,7 @@ import java.util.Map;
 
 public class JSONParser {
 
-    static JSONData parseJson(String jsonString) {
+    public static JSONData parseJson(String jsonString) {
         Map<Object, Object> data = new HashMap<>();
 
         var isChar = false;
@@ -115,29 +117,3 @@ public class JSONParser {
 
 }
 
-
-final class JSONData {
-    private Map<Object, Object> data;
-    private long index;
-
-    JSONData(Map<Object, Object> data, long index) {
-        this.data = data;
-        this.index = index;
-    }
-
-    Map<Object, Object> getData() {
-        return this.data;
-    }
-
-    long getIndex() {
-        return this.index;
-    }
-
-    void setData(Map<Object, Object> data) {
-        this.data = data;
-    }
-
-    void setIndex(long index) {
-        this.index = index;
-    }
-}

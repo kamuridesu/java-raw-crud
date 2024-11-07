@@ -1,3 +1,5 @@
+package fileio;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,13 +32,13 @@ public class Reader {
 
     /**
      * When callback is not null, it does not returns a String but null as the raw line is used in the callback;
-     * @param <G> Generic param for callback
      * @param file File to be read
      * @param delimiter Delimiter to break line
      * @param callback Callback
      * @return String or null
      * @throws IOException
      */
+    @SuppressWarnings("unchecked")
     static <T, G extends Object> String readFileBuffered(File file, char delimiter, Function<T, G> callback) throws IOException {
         var lineBuffer = new StringBuffer(1024);
         var fis = new FileInputStream(file);

@@ -1,3 +1,5 @@
+package fileio;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -18,25 +20,25 @@ public class FileIO {
 
     private File file;
 
-    FileIO(String filename) {
+    public FileIO(String filename) {
         this(filename, 'a');
     }
 
-    FileIO(String filename, char mode) {
+    public FileIO(String filename, char mode) {
         this.filename = filename;
         this.mode = mode;
         this.file = new File(filename);
     }
 
-    String read() throws IOException {
+    public String read() throws IOException {
         return Reader.readFileMemoryInefficient(this.file);
     }
 
-    <T extends Object, G extends Object> void read(Function<T, G> callback) throws IOException {
+    public <T extends Object, G extends Object> void read(Function<T, G> callback) throws IOException {
         Reader.readFileBuffered(this.file, callback);
     }
 
-    void write(String content) throws FileReadOnlyException, IOException {
+    public void write(String content) throws FileReadOnlyException, IOException {
         if (this.mode == 'r') {
             throw new FileReadOnlyException();
         }
