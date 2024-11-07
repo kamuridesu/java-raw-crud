@@ -46,5 +46,4 @@ Delete a user.
 
 - [ ] Add get all users route
 - [ ] Add tests
-- [ ] Add Dockerfile
-
+- [x] Add Dockerfile
