@@ -10,5 +10,4 @@ for folder in $(ls -d */); do
     mv $folder/*.class target/$folder 2> /dev/null
 done
 
-cp MANIFEST.MF target || exit 1
 mv *.jar target 2> /dev/null

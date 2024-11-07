@@ -9,19 +9,28 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class Main {
 
     private static final SQLite db = new SQLite("users.db");
 
+    private static final void ParameterChecker(Map<Object, Object> param, List<String> keys) {
+        for (var key : keys) {
+            if (param.get(key) == null) {
+                throw new IllegalArgumentException("Missing '" + key + "' parameter");
+            }
+        }
+    }
+
     @SuppressWarnings("unchecked")
     private static final User getUserFromJson(String json) {
         var parsedData = JSONParser.parseJson(json).getData();
+        ParameterChecker(parsedData, List.of("name", "personal_info"));
         var personalInfo = (HashMap<Object, Object>) parsedData.get("personal_info");
-        if (personalInfo == null) {
-            throw new IllegalArgumentException("Invalid JSON format");
-        }
+        ParameterChecker(personalInfo, List.of("age", "skills", "salary"));
         return new User(
             String.valueOf(parsedData.get("name")),
             Integer.valueOf(String.valueOf(personalInfo.get("age"))),
@@ -38,7 +47,6 @@ public class Main {
             try {
                 if (userQuery.size() < 1 || userQuery.get(0).get("username") == null) {
                     var users = db.selectAllUsers();
-                    System.out.println(users);
                     return new Response(users.toString());
                 }
                 var username = userQuery.get(0).get("username");
@@ -64,7 +72,7 @@ public class Main {
                 db.insertUser(user);
                 return new Response(user.toString());
             } catch (IllegalArgumentException e) {
-                return new Response("Invalid JSON format", 400);
+                return new Response(e.getMessage(), 400);
             } catch (SQLException e) {
                 return new Response("SQL error: " + e.getMessage(), 500);
             }
@@ -82,7 +90,7 @@ public class Main {
                 db.updateUser(existingUser);
                 return new Response(user.toString());
             } catch (IllegalArgumentException e) {
-                return new Response("Invalid JSON format", 400);
+                return new Response(e.getMessage(), 400);
             } catch (SQLException e) {
                 return new Response("SQL error: " + e.getMessage(), 500);
             }
