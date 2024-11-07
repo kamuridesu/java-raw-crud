@@ -69,10 +69,12 @@ public class SQLite {
     public List<User> selectAllUsers() throws SQLException {
         var query = "SELECT * FROM users";
         List<User> allUsers = new ArrayList<>();
-        var result = executeQuery(query);
+        var stmt = this.connection.createStatement();
+        var result = stmt.executeQuery(query);
         while (result.next()) {
             allUsers.add(new User(result.getInt("id"), result.getString("name"), result.getInt("age"), result.getString("skills"), result.getDouble("salary")));
         }
+        stmt.close();
         return allUsers;
     }
 

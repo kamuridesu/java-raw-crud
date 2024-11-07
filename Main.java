@@ -35,11 +35,14 @@ public class Main {
         var server = new Server(InetAddress.getByName("0.0.0.0"), 8081);
         server.registerRoute("/", (Request req) -> {
             var userQuery = req.getQueryParams();
-            if (userQuery.size() < 1 || userQuery.get(0).get("username") == null) {
-                return new Response("Missing username param", 400);
-            }
-            var username = userQuery.get(0).get("username");
             try {
+                if (userQuery.size() < 1 || userQuery.get(0).get("username") == null) {
+                    var users = db.selectAllUsers();
+                    System.out.println(users);
+                    return new Response(users.toString());
+                }
+                var username = userQuery.get(0).get("username");
+            
                 var user = db.selectUser(username);
                 if (!user.isValid()) {
                     return new Response("User not found", 404);
