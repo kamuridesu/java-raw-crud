@@ -42,4 +42,9 @@ Delete a user.
     }
 }
 ```
+## TODO
+
+- [ ] Add get all users route
+- [ ] Add tests
+- [ ] Add Dockerfile
 
