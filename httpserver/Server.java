@@ -74,21 +74,15 @@ public class Server {
 
     void handleRequest(HttpExchange t) {
         var request = new Request(t);
-        var response = notFoundDefaultResponse(request);
-        for (var route : routes) {
-            if (route.matches(request)) {
-                response = route.runHandler(request);
-                break;
-            }
-        }
+        var response = routes.stream()
+                     .filter(route -> route.matches(request))
+                     .findFirst()
+                     .map(route -> route.runHandler(request))
+                     .orElse(notFoundDefaultResponse(request));
         try {
             t.sendResponseHeaders(response.getStatusCode(), response.getBody().length());
             t.getResponseHeaders().add("Content-Type", response.getContentType());
-            for (var header : headers) {
-                for (var entry : header.entrySet()) {
-                    t.getResponseHeaders().add(entry.getKey(), entry.getValue());
-                }
-            }
+            headers.stream().forEach(s -> s.forEach((k, v) -> t.getResponseHeaders().add(k, v)));
             var os = t.getResponseBody();
             os.write(response.getBody().getBytes());
             os.close();
