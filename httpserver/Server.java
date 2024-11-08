@@ -14,12 +14,13 @@ import com.sun.net.httpserver.HttpServer;
 
 public class Server {
 
-    private List<Route> routes = new ArrayList<>(); 
+    private List<Route> routes = new ArrayList<>();
     private List<Map<String, String>> headers = new ArrayList<>();
     private InetAddress address = InetAddress.getLoopbackAddress();
     private int port = 8080;
 
-    public Server() {}
+    public Server() {
+    }
 
     public Server(int port) {
         this.port = port;
@@ -30,16 +31,16 @@ public class Server {
         this.port = port;
     }
 
-    public Server(InetAddress address, int port, List<Map<String, String>> headers){
+    public Server(InetAddress address, int port, List<Map<String, String>> headers) {
         this.headers = headers;
     }
 
-    public Server(int port, List<Map<String, String>> headers){
+    public Server(int port, List<Map<String, String>> headers) {
         this.port = port;
         this.headers = headers;
     }
 
-    public Server(List<Map<String, String>> headers){
+    public Server(List<Map<String, String>> headers) {
         this.headers = headers;
     }
 
@@ -75,10 +76,10 @@ public class Server {
     void handleRequest(HttpExchange t) {
         var request = new Request(t);
         var response = routes.stream()
-                     .filter(route -> route.matches(request))
-                     .findFirst()
-                     .map(route -> route.runHandler(request))
-                     .orElse(notFoundDefaultResponse(request));
+                .filter(route -> route.matches(request))
+                .findFirst()
+                .map(route -> route.runHandler(request))
+                .orElse(notFoundDefaultResponse(request));
         try {
             t.sendResponseHeaders(response.getStatusCode(), response.getBody().length());
             t.getResponseHeaders().add("Content-Type", response.getContentType());

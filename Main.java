@@ -7,22 +7,29 @@ import jsonparser.JSONParser;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 public class Main {
 
     private static final SQLite db = new SQLite("users.db");
+    private static Server server;
+
+    static {
+        try {
+            server = new Server(InetAddress.getByName("0.0.0.0"), 8081);
+        } catch (UnknownHostException e) {
+            throw new RuntimeException("Failed to initialize server", e);
+        }
+    }
 
     private static final void ParameterChecker(Map<Object, Object> param, List<String> keys) {
-        for (var key : keys) {
-            if (param.get(key) == null) {
-                throw new IllegalArgumentException("Missing '" + key + "' parameter");
-            }
-        }
+        keys.stream().filter(key -> param.get(key) == null).forEach(key -> {
+            throw new IllegalArgumentException("Missing '" + key + "' parameter");
+        });
     }
 
     @SuppressWarnings("unchecked")
@@ -32,16 +39,13 @@ public class Main {
         var personalInfo = (HashMap<Object, Object>) parsedData.get("personal_info");
         ParameterChecker(personalInfo, List.of("age", "skills", "salary"));
         return new User(
-            String.valueOf(parsedData.get("name")),
-            Integer.valueOf(String.valueOf(personalInfo.get("age"))),
-            String.valueOf(personalInfo.get("skills")),
-            Double.valueOf(String.valueOf(personalInfo.get("salary")))
-        );
+                String.valueOf(parsedData.get("name")),
+                Integer.valueOf(String.valueOf(personalInfo.get("age"))),
+                String.valueOf(personalInfo.get("skills")),
+                Double.valueOf(String.valueOf(personalInfo.get("salary"))));
     }
 
     public static void main(String[] args) throws IOException {
-
-        var server = new Server(InetAddress.getByName("0.0.0.0"), 8081);
         server.registerRoute("/", (Request req) -> {
             var userQuery = req.getQueryParams();
             try {
@@ -50,7 +54,7 @@ public class Main {
                     return new Response(users.toString());
                 }
                 var username = userQuery.get(0).get("username");
-            
+
                 var user = db.selectUser(username);
                 if (!user.isValid()) {
                     return new Response("User not found", 404);

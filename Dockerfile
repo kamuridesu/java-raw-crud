@@ -4,6 +4,7 @@ RUN curl --output sqlite-jdbc-3.46.0.jar https://repo1.maven.org/maven2/org/xeri
 RUN curl --output slf4j-api-2.0.13.jar https://repo1.maven.org/maven2/org/slf4j/slf4j-api/2.0.13/slf4j-api-2.0.13.jar -SsL
 COPY . .
 RUN bash build.sh
+RUN bash test.sh
 
 FROM eclipse-temurin:17.0.13_11-jre-ubi9-minimal
 WORKDIR /app

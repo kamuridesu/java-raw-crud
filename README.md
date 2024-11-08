@@ -44,6 +44,7 @@ Delete a user.
 ```
 ## TODO
 
-- [ ] Add get all users route
-- [ ] Add tests
+- [x] Add get all users route
+- [x] Add tests
 - [x] Add Dockerfile
+- [ ] Build .jar file

@@ -78,10 +78,7 @@ public class Request {
 class Headers extends com.sun.net.httpserver.Headers {
     @Override
     public String toString() {
-        var s = "";
-        for (var key : this.keySet()) {
-            s += key + ": " + this.get(key).get(0) + "\n";
-        }
-        return s;
+        return this.keySet().stream()
+                .reduce("", (acc, key) -> acc + key + ": " + this.get(key).get(0) + "\n");
     }
 }

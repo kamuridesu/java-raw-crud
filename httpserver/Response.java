@@ -5,7 +5,8 @@ public final class Response {
     private int statusCode = 200;
     private String contentType = "text/plain";
 
-    public Response() {}
+    public Response() {
+    }
 
     public Response(String body) {
         this.body = body;

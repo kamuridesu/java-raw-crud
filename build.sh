@@ -1,6 +1,7 @@
 #! /bin/bash
 
 javac -d . -sourcepath . Main.java
+javac -d . tests/Test.java
 mkdir -p target
 mv Main.class target 2> /dev/null
 for folder in $(ls -d */); do

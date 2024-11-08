@@ -14,12 +14,12 @@ public class JSONParser {
         var isNum = false;
         var isList = false;
         var isKey = false;
-        
+
         List<Object> listItems = new ArrayList<>();
         var key = "";
         var actualString = "";
-        
-        Character[] charslist = {'"', ']', '}', ' ', ','};
+
+        Character[] charslist = { '"', ']', '}', ' ', ',' };
         List<Character> delimString = List.of(charslist);
 
         for (int index = 0; index < jsonString.length(); index++) {
@@ -36,7 +36,8 @@ public class JSONParser {
                                 listItems.add(Double.parseDouble(actualString));
                             } else {
                                 listItems.add(Integer.parseInt(actualString));
-                            };
+                            }
+                            ;
                         } else {
                             listItems.add(actualString);
                         }
@@ -116,4 +117,3 @@ public class JSONParser {
     }
 
 }
-

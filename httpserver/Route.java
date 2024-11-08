@@ -42,8 +42,8 @@ public final class Route {
     }
 
     public boolean matches(Request request) {
-        return this.path.equals(request.getPath()) 
-            && this.method.toLowerCase().equals(request.getMethod().toLowerCase());
+        return this.path.equals(request.getPath())
+                && this.method.toLowerCase().equals(request.getMethod().toLowerCase());
     }
 
 }

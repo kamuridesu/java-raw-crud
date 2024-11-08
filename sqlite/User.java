@@ -1,11 +1,11 @@
 package sqlite;
 
 public class User {
-    int id;
-    String name;
-    String skills;
-    Double salary;
-    int age;
+    private int id;
+    private String name;
+    private String skills;
+    private Double salary;
+    private int age;
 
     public User(int id, String name, int age, String skills, Double salary) {
         this.id = id;
@@ -85,7 +85,8 @@ public class User {
     }
 
     public boolean equals(User user) {
-        return this.name.equals(user.name) && this.age == user.age && this.skills.equals(user.skills) && this.salary.equals(user.salary);
+        return this.name.equals(user.name) && this.age == user.age && this.skills.equals(user.skills)
+                && this.salary.equals(user.salary);
     }
 
     public void update(User user) {
