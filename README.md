@@ -47,4 +47,4 @@ Delete a user.
 - [x] Add get all users route
 - [x] Add tests
 - [x] Add Dockerfile
-- [ ] Build .jar file
+- [x] Build .jar file

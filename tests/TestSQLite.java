@@ -8,7 +8,7 @@ public class TestSQLite extends TestABC {
     private final SQLite sqlite = new SQLite("test.db");
 
     public TestSQLite() {
-        // addTest(this::testInsertUser);
+        addTest(this::testInsertUser);
         addTest(this::testSelectAllUsers);
         addTest(this::testSelectJohnDoe);
         addTest(this::testDeleteJohnDoe);

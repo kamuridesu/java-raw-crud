@@ -1,7 +1,7 @@
 #! /bin/bash
 
+[[ "$1" == "test" ]] && javac -d . tests/Test.java
 javac -d . -sourcepath . Main.java
-javac -d . tests/Test.java
 mkdir -p target
 mv Main.class target 2> /dev/null
 for folder in $(ls -d */); do
@@ -11,4 +11,4 @@ for folder in $(ls -d */); do
     mv $folder/*.class target/$folder 2> /dev/null
 done
 
-mv *.jar target 2> /dev/null
+. ./deps.sh
