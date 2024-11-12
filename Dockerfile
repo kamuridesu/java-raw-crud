@@ -13,7 +13,7 @@ WORKDIR /app
 COPY . .
 COPY --from=deps /app/target/MANIFEST.MF /app/target/MANIFEST.MF
 COPY --from=deps /app/*.jar /app/
-RUN bash ./run.sh --package --skipDeps
+RUN bash ./run.sh --package --skipDeps -x
 
 FROM ${BASE_JRE}
 WORKDIR /app

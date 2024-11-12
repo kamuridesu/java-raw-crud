@@ -97,6 +97,7 @@ main() {
     SKIP_DEPS=false
     RUN=false
     CLEAN=false
+    DELETE_AFTER_TESTS=false
 
     while [[ "$#" -gt 0 ]]; do
         case $1 in
@@ -106,6 +107,7 @@ main() {
             -d|--skipDeps) SKIP_DEPS="true"; shift ;;
             -r|--run) RUN="true"; shift ;;
             -c|--clean) CLEAN="true"; shift ;;
+            -x|--delTests) DELETE_AFTER_TESTS="true"; shift ;;
             *) echo "[ERROR] Unknown parameter passed: $1"; exit 1 ;;
         esac
     done
@@ -115,6 +117,9 @@ main() {
     setup_dependencies $SKIP_DEPS || exit 1
     build $SKIP_BUILD $TEST || exit 1
     test $TEST || exit 1
+
+    [[ "$DELETE_AFTER_TESTS" == "true" ]] && rm -rf target/tests
+
     package $PACKAGE || exit 1
     run $RUN
 }
