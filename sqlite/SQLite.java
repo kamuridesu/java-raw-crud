@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SQLite {
-    Connection connection;
+    private Connection connection;
 
     public SQLite(String db) {
         try {
@@ -94,5 +94,12 @@ public class SQLite {
         query.setInt(5, user.getId());
         query.executeUpdate();
         query.close();
+    }
+
+    public void dropTable() throws SQLException {
+        var query = "DROP TABLE IF EXISTS users";
+        var stmt = this.connection.createStatement();
+        stmt.execute(query);
+        stmt.close();
     }
 }

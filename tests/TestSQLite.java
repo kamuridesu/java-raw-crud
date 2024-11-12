@@ -5,14 +5,39 @@ import sqlite.User;
 
 public class TestSQLite extends TestABC {
 
-    private final SQLite sqlite = new SQLite("test.db");
+    private SQLite sqlite;
 
     public TestSQLite() {
+        hookBeforeEach(this::initDB);
+        hookBeforeEach(this::setupUser);
+        hookAfterEach(this::dropTable);
+        hookAfterAll(this::deleteTestDBFileIfExists);
+
         addTest(this::testInsertUser);
         addTest(this::testSelectAllUsers);
         addTest(this::testSelectJohnDoe);
         addTest(this::testDeleteJohnDoe);
-        hookAfterAll(this::deleteTestDBFileIfExists);
+    }
+
+    private void initDB() {
+        this.sqlite = new SQLite("test.db");
+    }
+
+    private void setupUser() {
+        var user = new User("John Doe", 30, "Java, Python", 1000.0);
+        try {
+            sqlite.insertUser(user);
+        } catch (Exception e) {
+            throw new AssertionError("Error inserting user: " + e.getMessage());
+        }
+    }
+
+    private void dropTable() {
+        try {
+            sqlite.dropTable();
+        } catch (Exception e) {
+            throw new AssertionError("Error dropping table: " + e.getMessage());
+        }
     }
 
     private void deleteTestDBFileIfExists() {
@@ -24,7 +49,7 @@ public class TestSQLite extends TestABC {
     }
 
     void testInsertUser() {
-        var user = new User("John Doe", 30, "Java, Python", 1000.0);
+        var user = new User("Admin", 30, "Rest, Kubernetes", 100.0);
         try {
             sqlite.insertUser(user);
         } catch (Exception e) {

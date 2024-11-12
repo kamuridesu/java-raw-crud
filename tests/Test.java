@@ -6,7 +6,7 @@ public class Test {
     private static final TestSQLite testSQLite = new TestSQLite();
 
     public static void main(String[] args) {
-        testJsonParser.run();
         testSQLite.run();
+        testJsonParser.run();
     }
 }
