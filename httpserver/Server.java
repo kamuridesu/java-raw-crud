@@ -74,6 +74,7 @@ public class Server {
     }
 
     void handleRequest(HttpExchange t) {
+        var requestStartTime = System.currentTimeMillis();
         var request = new Request(t);
         var response = routes.stream()
                 .filter(route -> route.matches(request))
@@ -90,5 +91,9 @@ public class Server {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        var requestEndTime = System.currentTimeMillis();
+        var currentDateTime = java.time.LocalDateTime.now();
+        System.out.println("[INFO] " + currentDateTime + " - " + request.getMethod() + " " + request.getPath() + " - "
+                + response.getStatusCode() + " - " + (requestEndTime - requestStartTime) + "ms");
     }
 }

@@ -3,3 +3,6 @@
 *.db
 .git/
 target/
+Dockerfile
+.dockerignore
+.gitignore
