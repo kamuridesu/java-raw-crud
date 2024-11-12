@@ -12,19 +12,25 @@ setup_dependencies() {
         URL=$(echo $DEP | cut -d'<' -f2)
         JAR_NAMES="$JAR_NAMES $NAME"
         if [[ ! -f $NAME ]]; then
-            echo "Downloading $NAME from $URL..."
+            echo "[INFO] Downloading $NAME from $URL..."
             curl --output $NAME $URL -SsL
         fi
     done
 
-    cat MANIFEST.MF.tmpl | sed -e "s/\${JAR_NAMES}/${JAR_NAMES}/" > target/MANIFEST.MF
+    cp -r MANIFEST.MF.tmpl target/MANIFEST.MF
+    if [[ "$JAR_NAMES" == "" ]]; then
+        echo "[WARN] No dependencies found!"
+        return 0
+    fi
 
-    echo "Dependencies checked!"
+    echo "Class-Path:$JAR_NAMES" >> target/MANIFEST.MF
+
+    echo "[INFO] Dependencies checked!"
 }
 
 build() {
     [[ "$1" == "true" ]] && return 0
-    echo "Building the project..."
+    echo "[INFO] Building the project..."
     [[ "$2" == "true" ]] && javac -d . tests/Test.java
     javac -d . -sourcepath . Main.java
     mkdir -p target
@@ -35,35 +41,51 @@ build() {
         mkdir -p target/$folder
         mv $folder/*.class target/$folder 2> /dev/null
     done
-    echo "Project built successfully!"
+    echo "[INFO] Project built successfully!"
 }
 
 test() {
     [[ "$1" == "false" ]] && return 0
-    echo "Running tests..."
+    echo "[INFO] Running tests..."
 
     cd target
     java -cp ".:../*" -ea tests/Test || exit 1
     cd - > /dev/null
 
-    echo "Tests passed!"
+    echo "[INFO] Tests passed!"
 }
 
 package() {
     [[ "$1" == "false" ]] && return 0
-    echo "Packaging the project..."
+    echo "[INFO] Packaging the project..."
+    if [[ ! -d target ]]; then
+        echo "[ERROR] No target directory found. Please build the project first."
+        exit 1
+    fi
     cd target
+    if [[ ! -f MANIFEST.MF ]]; then
+        echo "[WARN] No MANIFEST.MF file found. Please make sure you have a MANIFEST.MF file in the target directory."
+        cd - > /dev/null
+        return 0
+    fi
     jar cfm "$PROJECTNAME.jar" MANIFEST.MF -C . .
     cd ..
     mv target/"$PROJECTNAME.jar" .
-    echo "Project packaged successfully!"
+    echo "[INFO] Project packaged successfully!"
 }
 
 run() {
     [[ "$1" == "false" ]] && return 0
     if [[ ! -f "$PROJECTNAME.jar" ]]; then
-        java -cp "target:./*" Main
+        if [[ ! -d target ]]; then
+            echo "[ERROR] No target directory found. Please build the project first."
+            exit 1
+        fi
+        cd target
+        echo "[INFO] Running the project"
+        java -cp ".:../*" Main
     else
+        echo "[INFO] Running the project from the jar file"
         java -jar "$PROJECTNAME.jar"
     fi
 }
@@ -74,6 +96,7 @@ main() {
     SKIP_BUILD=false
     SKIP_DEPS=false
     RUN=false
+    CLEAN=false
 
     while [[ "$#" -gt 0 ]]; do
         case $1 in
@@ -82,9 +105,12 @@ main() {
             -b|--skipBuild) SKIP_BUILD="true"; shift ;;
             -d|--skipDeps) SKIP_DEPS="true"; shift ;;
             -r|--run) RUN="true"; shift ;;
-            *) echo "Unknown parameter passed: $1"; exit 1 ;;
+            -c|--clean) CLEAN="true"; shift ;;
+            *) echo "[ERROR] Unknown parameter passed: $1"; exit 1 ;;
         esac
     done
+
+    [[ "$CLEAN" == "true" ]] && rm -rf target && rm -f "$PROJECTNAME.jar"
 
     setup_dependencies $SKIP_DEPS || exit 1
     build $SKIP_BUILD $TEST || exit 1
