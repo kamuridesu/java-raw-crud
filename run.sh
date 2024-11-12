@@ -1,5 +1,7 @@
 #! /bin/bash
 
+PROJECTNAME=$(basename $(pwd))
+
 setup_dependencies() {
     [[ "$1" == "true" ]] && return 0
     mkdir -p target
@@ -50,12 +52,20 @@ test() {
 package() {
     [[ "$1" == "false" ]] && return 0
     echo "Packaging the project..."
-    PROEJCTNAME=$(basename $(pwd))
     cd target
-    jar cfm "$PROEJCTNAME.jar" MANIFEST.MF -C . .
+    jar cfm "$PROJECTNAME.jar" MANIFEST.MF -C . .
     cd ..
-    mv target/"$PROEJCTNAME.jar" .
+    mv target/"$PROJECTNAME.jar" .
     echo "Project packaged successfully!"
+}
+
+run() {
+    [[ "$1" == "false" ]] && return 0
+    if [[ ! -f "$PROJECTNAME.jar" ]]; then
+        java -cp "target:./*" Main
+    else
+        java -jar "$PROJECTNAME.jar"
+    fi
 }
 
 main() {
@@ -63,6 +73,7 @@ main() {
     TEST=true
     SKIP_BUILD=false
     SKIP_DEPS=false
+    RUN=false
 
     while [[ "$#" -gt 0 ]]; do
         case $1 in
@@ -70,6 +81,7 @@ main() {
             -s|--skipTests) TEST="false"; shift ;;
             -b|--skipBuild) SKIP_BUILD="true"; shift ;;
             -d|--skipDeps) SKIP_DEPS="true"; shift ;;
+            -r|--run) RUN="true"; shift ;;
             *) echo "Unknown parameter passed: $1"; exit 1 ;;
         esac
     done
@@ -78,6 +90,7 @@ main() {
     build $SKIP_BUILD $TEST || exit 1
     test $TEST || exit 1
     package $PACKAGE || exit 1
+    run $RUN
 }
 
 main "$@"
