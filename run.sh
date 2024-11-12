@@ -90,6 +90,18 @@ run() {
     fi
 }
 
+usage() {
+    echo "Usage: $0 [options]"
+    echo "Options:"
+    echo "  -p, --package    Package the project"
+    echo "  -s, --skipTests  Skip running tests"
+    echo "  -b, --skipBuild  Skip building the project"
+    echo "  -d, --skipDeps   Skip checking dependencies"
+    echo "  -r, --run        Run the project"
+    echo "  -c, --clean      Clean the project"
+    echo "  -x, --delTests   Delete the tests directory after running tests"
+}
+
 main() {
     PACKAGE=false
     TEST=true
@@ -108,7 +120,7 @@ main() {
             -r|--run) RUN="true"; shift ;;
             -c|--clean) CLEAN="true"; shift ;;
             -x|--delTests) DELETE_AFTER_TESTS="true"; shift ;;
-            *) echo "[ERROR] Unknown parameter passed: $1"; exit 1 ;;
+            *) usage; exit 1 ;;
         esac
     done
 
