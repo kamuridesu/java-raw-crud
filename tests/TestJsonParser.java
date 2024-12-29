@@ -3,7 +3,9 @@ package tests;
 import java.util.List;
 
 import jsonparser.JSONParser;
+import scan.Test;
 
+@Test
 public class TestJsonParser extends TestABC {
 
     public TestJsonParser() {

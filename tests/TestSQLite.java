@@ -1,8 +1,10 @@
 package tests;
 
+import scan.Test;
 import sqlite.SQLite;
 import sqlite.User;
 
+@Test
 public class TestSQLite extends TestABC {
 
     private SQLite sqlite;
