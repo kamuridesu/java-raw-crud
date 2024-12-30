@@ -31,7 +31,7 @@ setup_dependencies() {
 build() {
     [[ "$1" == "true" ]] && return 0
     echo "[INFO] Building the project..."
-    [[ "$2" == "true" ]] && javac -d . tests/Test.java
+    [[ "$2" == "true" ]] && javac -d . tests/*.java && javac -d . scan/*.java
     javac -d . -sourcepath . Main.java
     mkdir -p target
     mv Main.class target 2> /dev/null

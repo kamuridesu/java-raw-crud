@@ -1,8 +1,17 @@
 package tests;
 
-public class Test {
+import java.io.IOException;
 
-    public static void main(String[] args) {
+import scan.Scan;
+
+public class Test {
+    public static void main(String[] args) throws IOException {
+
+        var testClasses = Scan.search(scan.Test.class);
+        testClasses.forEach(s -> {
+            TestABC tc = (TestABC) s;
+            tc.run();
+        });
         
     }
 }
