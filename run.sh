@@ -23,7 +23,7 @@ setup_dependencies() {
         return 0
     fi
 
-    echo "Class-Path:$JAR_NAMES" >> target/MANIFEST.MF
+    echo "Class-Path:$JAR_NAMES" >>target/MANIFEST.MF
 
     echo "[INFO] Dependencies checked!"
 }
@@ -34,12 +34,12 @@ build() {
     [[ "$2" == "true" ]] && javac -d . tests/*.java && javac -d . scan/*.java
     javac -d . -sourcepath . Main.java
     mkdir -p target
-    mv Main.class target 2> /dev/null
+    mv Main.class target 2>/dev/null
     for folder in $(ls -d */); do
-        grep ".git" <<< $folder > /dev/null && continue
-        grep "target" <<< $folder > /dev/null && continue
+        grep ".git" <<<$folder >/dev/null && continue
+        grep "target" <<<$folder >/dev/null && continue
         mkdir -p target/$folder
-        mv $folder/*.class target/$folder 2> /dev/null
+        mv $folder/*.class target/$folder 2>/dev/null
     done
     echo "[INFO] Project built successfully!"
 }
@@ -50,7 +50,7 @@ test() {
 
     cd target
     java -cp ".:../*" -ea tests/Test || exit 1
-    cd - > /dev/null
+    cd - >/dev/null
 
     echo "[INFO] Tests passed!"
 }
@@ -65,7 +65,7 @@ package() {
     cd target
     if [[ ! -f MANIFEST.MF ]]; then
         echo "[WARN] No MANIFEST.MF file found. Please make sure you have a MANIFEST.MF file in the target directory."
-        cd - > /dev/null
+        cd - >/dev/null
         return 0
     fi
     jar cfm "$PROJECTNAME.jar" MANIFEST.MF -C . .
@@ -113,14 +113,38 @@ main() {
 
     while [[ "$#" -gt 0 ]]; do
         case $1 in
-            -p|--package) PACKAGE="true"; shift ;;
-            -s|--skipTests) TEST="false"; shift ;;
-            -b|--skipBuild) SKIP_BUILD="true"; shift ;;
-            -d|--skipDeps) SKIP_DEPS="true"; shift ;;
-            -r|--run) RUN="true"; shift ;;
-            -c|--clean) CLEAN="true"; shift ;;
-            -x|--delTests) DELETE_AFTER_TESTS="true"; shift ;;
-            *) usage; exit 1 ;;
+        -p | --package)
+            PACKAGE="true"
+            shift
+            ;;
+        -s | --skipTests)
+            TEST="false"
+            shift
+            ;;
+        -b | --skipBuild)
+            SKIP_BUILD="true"
+            shift
+            ;;
+        -d | --skipDeps)
+            SKIP_DEPS="true"
+            shift
+            ;;
+        -r | --run)
+            RUN="true"
+            shift
+            ;;
+        -c | --clean)
+            CLEAN="true"
+            shift
+            ;;
+        -x | --delTests)
+            DELETE_AFTER_TESTS="true"
+            shift
+            ;;
+        *)
+            usage
+            exit 1
+            ;;
         esac
     done
 

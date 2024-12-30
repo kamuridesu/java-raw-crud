@@ -12,6 +12,6 @@ public class Test {
             TestABC tc = (TestABC) s;
             tc.run();
         });
-        
+
     }
 }

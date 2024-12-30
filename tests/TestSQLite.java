@@ -85,5 +85,4 @@ public class TestSQLite extends TestABC {
         }
     }
 
-    
 }

@@ -16,15 +16,15 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Scan {
-    
+
     private static List<File> scan(File dirOrF) {
         List<File> files = new ArrayList<>();
         Optional.ofNullable(dirOrF.listFiles()).ifPresent(s -> Arrays.stream(s)
-        .collect(Collectors.collectingAndThen(Collectors.partitioningBy(x -> x.isDirectory()), e -> {
-            e.get(true).forEach(x -> scan(x).forEach(files::add));
-            e.get(false).forEach(files::add);
-            return null;
-        })));
+                .collect(Collectors.collectingAndThen(Collectors.partitioningBy(x -> x.isDirectory()), e -> {
+                    e.get(true).forEach(x -> scan(x).forEach(files::add));
+                    e.get(false).forEach(files::add);
+                    return null;
+                })));
         return files;
     }
 
@@ -66,8 +66,8 @@ public class Scan {
         }
         final var dir = dirName;
 
-        var classLoader = new URLClassLoader(new URL[]{
-            new URL(dir.startsWith("file") ? dir : "file:" + dir)
+        var classLoader = new URLClassLoader(new URL[] {
+                new URL(dir.startsWith("file") ? dir : "file:" + dir)
         });
 
         List<Object> annotatedClasses = new ArrayList<>();
@@ -75,16 +75,14 @@ public class Scan {
         files.forEach(file -> {
             try {
                 var fqn = file.getAbsolutePath()
-                    .replace(dir, "")
-                    .replace(".class", "")
-                    .replace("/", ".");
+                        .replace(dir, "")
+                        .replace(".class", "")
+                        .replace("/", ".");
 
                 Class<?> c = classLoader.loadClass(fqn);
                 Object instance = instantiate(c);
-                if (instance != null) {
-                    if (instance.getClass().isAnnotationPresent(annotation)) {
-                        annotatedClasses.add(instance);
-                    }
+                if (instance != null && instance.getClass().isAnnotationPresent(annotation)) {
+                    annotatedClasses.add(instance);
                 }
             } catch (ClassNotFoundException e) {
 
