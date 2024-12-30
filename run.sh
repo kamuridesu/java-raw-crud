@@ -46,13 +46,13 @@ build() {
 
 test() {
     [[ "$1" == "false" ]] && return 0
-    echo "[INFO] Running tests..."
+    echo "[TEST] Running tests..."
 
     cd target
     java -cp ".:../*" -ea tests/Test || exit 1
     cd - >/dev/null
 
-    echo "[INFO] Tests passed!"
+    echo "[TEST] Tests passed!"
 }
 
 package() {

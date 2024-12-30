@@ -5,12 +5,10 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Parameter;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,16 +26,15 @@ public class Scan {
         return files;
     }
 
-    private static Object instantiate(Class<?> c) {
-        if (Modifier.isAbstract(c.getModifiers())) {
-            return null;
+    private static Optional<?> instantiate(Class<?> c) {
+        if (Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) {
+            return Optional.empty();
         }
-        Object[] test = new Object[1];
-        Arrays.stream(c.getConstructors()).forEach(cons -> {
-            Parameter[] param = cons.getParameters();
+        return Arrays.stream(c.getConstructors()).map(cons -> {
+            var param = cons.getParameters();
             if (param.length == 0) {
                 try {
-                    test[0] = cons.newInstance();
+                    return cons.newInstance();
                 } catch (InvocationTargetException e) {
                     throw new RuntimeException(e);
                 } catch (InstantiationException e) {
@@ -46,13 +43,14 @@ public class Scan {
                     throw new RuntimeException(e);
                 }
             }
-        });
-        return test[0];
+            return null;
+        }).filter(s -> s != null).findFirst();
     }
 
     public static <T extends Annotation> List<Object> search(Class<T> annotation) throws IOException {
-        Iterator<URL> resources;
-        resources = ClassLoader.getSystemClassLoader().getResources("").asIterator();
+        var resources = ClassLoader.getSystemClassLoader()
+                .getResources("")
+                .asIterator();
         List<File> files = new ArrayList<File>();
         String dirName = null;
         while (resources.hasNext()) {
@@ -79,11 +77,13 @@ public class Scan {
                         .replace(".class", "")
                         .replace("/", ".");
 
-                Class<?> c = classLoader.loadClass(fqn);
-                Object instance = instantiate(c);
-                if (instance != null && instance.getClass().isAnnotationPresent(annotation)) {
-                    annotatedClasses.add(instance);
-                }
+                var c = classLoader.loadClass(fqn);
+                var instance = instantiate(c);
+                instance.ifPresent(i -> {
+                    if (i.getClass().isAnnotationPresent(annotation)) {
+                        annotatedClasses.add(i);
+                    }
+                });
             } catch (ClassNotFoundException e) {
 
             }
