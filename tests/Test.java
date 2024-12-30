@@ -1,12 +1,17 @@
 package tests;
 
+import java.io.IOException;
+
+import scan.Scan;
+
 public class Test {
+    public static void main(String[] args) throws IOException {
 
-    private static final TestJsonParser testJsonParser = new TestJsonParser();
-    private static final TestSQLite testSQLite = new TestSQLite();
-
-    public static void main(String[] args) {
-        testSQLite.run();
-        testJsonParser.run();
+        var testClasses = Scan.search(scan.Test.class);
+        testClasses.forEach(s -> {
+            TestABC tc = (TestABC) s;
+            tc.run();
+        });
+        
     }
 }
