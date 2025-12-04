@@ -1,31 +1,24 @@
 package tests;
 
 import scan.Test;
+import scan.BeforeEach;
+import scan.AfterEach;
+import scan.AfterAll;
 import sqlite.SQLite;
 import sqlite.User;
 
 @Test
-public class TestSQLite extends TestABC {
+public class TestSQLite {
 
-    private SQLite sqlite;
+    SQLite sqlite;
 
-    public TestSQLite() {
-        hookBeforeEach(this::initDB);
-        hookBeforeEach(this::setupUser);
-        hookAfterEach(this::dropTable);
-        hookAfterAll(this::deleteTestDBFileIfExists);
-
-        addTest(this::testInsertUser);
-        addTest(this::testSelectAllUsers);
-        addTest(this::testSelectJohnDoe);
-        addTest(this::testDeleteJohnDoe);
-    }
-
-    private void initDB() {
+    @BeforeEach
+    void initDB() {
         this.sqlite = new SQLite("test.db");
     }
 
-    private void setupUser() {
+    @BeforeEach
+    void setupUser() {
         var user = new User("John Doe", 30, "Java, Python", 1000.0);
         try {
             sqlite.insertUser(user);
@@ -34,7 +27,8 @@ public class TestSQLite extends TestABC {
         }
     }
 
-    private void dropTable() {
+    @AfterEach
+    void dropTable() {
         try {
             sqlite.dropTable();
         } catch (Exception e) {
@@ -42,7 +36,8 @@ public class TestSQLite extends TestABC {
         }
     }
 
-    private void deleteTestDBFileIfExists() {
+    @AfterAll
+    void deleteTestDBFileIfExists() {
         var file = new java.io.File("test.db");
         if (file.exists()) {
             file.delete();
@@ -50,6 +45,7 @@ public class TestSQLite extends TestABC {
         sqlite.close();
     }
 
+    @Test
     void testInsertUser() {
         var user = new User("Admin", 30, "Rest, Kubernetes", 100.0);
         try {
@@ -59,6 +55,7 @@ public class TestSQLite extends TestABC {
         }
     }
 
+    @Test
     void testSelectAllUsers() {
         try {
             var users = sqlite.selectAllUsers();
@@ -68,6 +65,7 @@ public class TestSQLite extends TestABC {
         }
     }
 
+    @Test
     void testSelectJohnDoe() {
         try {
             var user = sqlite.selectUser("John Doe");
@@ -77,6 +75,7 @@ public class TestSQLite extends TestABC {
         }
     }
 
+    @Test
     void testDeleteJohnDoe() {
         try {
             sqlite.deleteUser("John Doe");

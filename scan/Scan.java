@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -47,7 +48,8 @@ public class Scan {
         }).filter(s -> s != null).findFirst();
     }
 
-    public static <T extends Annotation> List<Object> search(Class<T> annotation) throws IOException {
+    public static <T extends Annotation, G> List<G> searchClass(Class<T> annotation, Class<G> cast)
+            throws IOException {
         var resources = ClassLoader.getSystemClassLoader()
                 .getResources("")
                 .asIterator();
@@ -64,11 +66,12 @@ public class Scan {
         }
         final var dir = dirName;
 
+        var f = new File(dir);
         var classLoader = new URLClassLoader(new URL[] {
-                new URL(dir.startsWith("file") ? dir : "file:" + dir)
+                f.toURI().toURL()
         });
 
-        List<Object> annotatedClasses = new ArrayList<>();
+        List<G> annotatedClasses = new ArrayList<>();
 
         files.forEach(file -> {
             try {
@@ -81,7 +84,7 @@ public class Scan {
                 var instance = instantiate(c);
                 instance.ifPresent(i -> {
                     if (i.getClass().isAnnotationPresent(annotation)) {
-                        annotatedClasses.add(i);
+                        annotatedClasses.add(cast.cast(i));
                     }
                 });
             } catch (ClassNotFoundException e) {
@@ -90,6 +93,17 @@ public class Scan {
         });
         classLoader.close();
         return annotatedClasses;
+    }
+
+    public static <T, G extends Annotation> List<Method> searchForAnnotatedMethods(Class<T> c, Class<G> annotation) {
+        var methods = c.getDeclaredMethods();
+        List<Method> annotatedMethods = new ArrayList<>();
+        for (var method : methods) {
+            if (method.isAnnotationPresent(annotation)) {
+                annotatedMethods.add(method);
+            }
+        }
+        return annotatedMethods;
     }
 
 }

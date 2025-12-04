@@ -6,12 +6,9 @@ import jsonparser.JSONParser;
 import scan.Test;
 
 @Test
-public class TestJsonParser extends TestABC {
+public class TestJsonParser {
 
-    public TestJsonParser() {
-        addTest(this::testParser);
-    }
-
+    @Test
     public void testParser() {
         var jsonString = "{\"name\":\"John\", \"age\":30, \"skills\":[\"Java\", \"Python\"]}";
         var jsonData = JSONParser.parseJson(jsonString);

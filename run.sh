@@ -32,6 +32,10 @@ build() {
     [[ "$1" == "true" ]] && return 0
     echo "[INFO] Building the project..."
     [[ "$2" == "true" ]] && javac -d . tests/*.java && javac -d . scan/*.java
+    if [[ "$?" != "0" ]]; then
+        echo "[ERROR] Failed to build project"
+        exit 1
+    fi
     javac -d . -sourcepath . Main.java
     mkdir -p target
     mv Main.class target 2>/dev/null
@@ -49,7 +53,11 @@ test() {
     echo "[TEST] Running tests..."
 
     cd target
-    java -cp ".:../*" -ea tests/Test || exit 1
+    java -cp ".:../*" -ea tests/Test
+    if [[ "$?" != "0" ]]; then
+        echo "[ERROR] Build Failed: Some tests did not pass."
+        exit 1
+    fi
     cd - >/dev/null
 
     echo "[TEST] Tests passed!"
